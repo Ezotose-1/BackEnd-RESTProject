@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -15,19 +15,16 @@ using BackEnd_RESTProject.Helpers;
 using BackEnd_RESTProject.Data;
 using System.Linq;
 
-namespace Controllers
+namespace BackEnd_RESTProject.Controllers
 {
-    [Authorize]
-    [ApiController]
-    [Route("[controller]")]
-    public class EmployerController : ControllerBase
+    public class MessageController : Controller
     {
         private IUserService _userService;
         private IMapper _mapper;
         public IConfiguration Configuration;
         private readonly Context _context;
 
-        public EmployerController(
+        public MessageController(
             Context context,
             IUserService userService,
             IMapper mapper,
@@ -39,30 +36,21 @@ namespace Controllers
             Configuration = configuration;
         }
 
-        /// <summary>
-        /// List all candidates.
-        /// </summary>
-        [Authorize(Roles= Role.Employer)]
-        [HttpGet("SeeAllCandidats")]
-        public IActionResult GetAll()
+        [AllowAnonymous]
+        [HttpGet("Send/{password}/{from}/{to}/{message}")]
+        public IActionResult SendMessage(string password, string from, string to, string message)
         {
-            var users = _context.User.ToList().Where(x => x.Role == "Candidat").OrderByDescending(x => x.Advertise);
-            var model = _mapper.Map<IList<UserModel>>(users);
-            return Ok(model);
-        }
+            var userFrom = _context.User.Where(x => x.Username == from && x.Password == password).Single();
+            var userTo = _context.User.Where(x => x.Username == to).Single();
+            var message_model = new MessageDTO
+            {
+                FromUsername = userFrom.Username,
+                ToUsername = userTo.Username,
+                Message = message
+            };
 
-        /// <summary>
-        /// See candidate profile.
-        /// </summary>
-        [Authorize(Roles= Role.Employer)]
-        [HttpGet("SeeACandidat/{id}")]
-        public IActionResult GetById(int id)
-        {
-            var user = _userService.GetById(id);
-            var model = _mapper.Map<UserModel>(user);
-            return Ok(model);
+            return Ok(message_model);
         }
-
-       
     }
+
 }
