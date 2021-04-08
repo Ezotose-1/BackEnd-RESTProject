@@ -89,7 +89,7 @@ namespace Controllers
             }
         }
 
-        [Authorize(Roles= Role.Admin)]
+        [Authorize(Roles= Role.Employer)]
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -135,6 +135,7 @@ namespace Controllers
             }
         }
 
+        [Authorize(Roles= Role.Admin)]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
