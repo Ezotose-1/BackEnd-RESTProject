@@ -49,7 +49,7 @@ namespace Controllers
         }
 
         [Authorize(Roles= Role.Employer)]
-        [HttpGet("{id}")]
+        [HttpGet("SeeACandidat/{id}")]
         public IActionResult GetById(int id)
         {
             var user = _userService.GetById(id);
