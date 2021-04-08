@@ -39,15 +39,21 @@ namespace Controllers
             Configuration = configuration;
         }
 
+        /// <summary>
+        /// List all candidates.
+        /// </summary>
         [Authorize(Roles= Role.Employer)]
         [HttpGet("SeeAllCandidats")]
         public IActionResult GetAll()
         {
-            var users = _context.User.ToList().Where(x => x.Role == "Candidat");
+            var users = _context.User.ToList().Where(x => x.Role == "Candidat").OrderByDescending(x => x.Advertise);
             var model = _mapper.Map<IList<UserModel>>(users);
             return Ok(model);
         }
 
+        /// <summary>
+        /// See candidate profile.
+        /// </summary>
         [Authorize(Roles= Role.Employer)]
         [HttpGet("SeeACandidat/{id}")]
         public IActionResult GetById(int id)
