@@ -12,6 +12,8 @@ using Microsoft.IdentityModel.Tokens;
 using BackEnd_RESTProject.Models;
 using BackEnd_RESTProject.Services;
 using BackEnd_RESTProject.Helpers;
+using BackEnd_RESTProject.Data;
+using System.Linq;
 
 namespace Controllers
 {
@@ -23,14 +25,17 @@ namespace Controllers
         private IUserService _userService;
         private IMapper _mapper;
         public IConfiguration Configuration;
+        private readonly Context _context;
 
         public UsersController(
+            Context context,
             IUserService userService,
             IMapper mapper,
             IConfiguration configuration)
         {
             _userService = userService;
             _mapper = mapper;
+            _context = context;
             Configuration = configuration;
         }
 
@@ -133,6 +138,16 @@ namespace Controllers
                 // return error message if there was an exception
                 return BadRequest(new { message = ex.Message });
             }
+        }
+
+        [HttpPut("{id}/{Advertise}")]
+        public IActionResult Avertise(int id, bool Advertise)
+        {
+            var user = _context.User.ToList().Find(x => x.Id == id);
+            user.Advertise = true;
+            _context.User.Update(user);
+            _context.SaveChanges();
+            return Ok();
         }
 
         [Authorize(Roles= Role.Admin)]
