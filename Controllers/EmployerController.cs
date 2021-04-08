@@ -56,5 +56,21 @@ namespace Controllers
             var model = _mapper.Map<UserModel>(user);
             return Ok(model);
         }
+
+        [Authorize(Roles = Role.Employer)]
+        [HttpGet("Send/{password}/{from}/{to}/{message}")]
+        public IActionResult SendMessage(string password,string from, string to,string message)
+        {
+            var userFrom = _context.User.Where(x => x.Username == from && x.Password == password).Single();
+            var userTo = _context.User.Where(x => x.Username == to).Single();
+            var message_model = new MessageDTO
+            {
+                FromUsername = userFrom.Username,
+                ToUsername = userTo.Username,
+                Message = message
+            };
+
+            return Ok(message_model);
+        }
     }
 }
