@@ -12,5 +12,6 @@ namespace BackEnd_RESTProject.Models
         public string Skillset { get; set; }
         public bool Avaible { get; set; }
         public string Role { get; set; }
+        public bool Advertise { get; set; }
     }
 }
