@@ -18,6 +18,6 @@ namespace BackEnd_RESTProject.DTO
         public string Password { get; set; }
 
         [Required]
-        public bool isEmployer { get; set; }
+        public string Role { get; set; }
     }
 }

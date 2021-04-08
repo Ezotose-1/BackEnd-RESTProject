@@ -8,7 +8,7 @@ namespace BackEnd_RESTProject.DTO
         public string Username { get; set; }
         public string Skillset { get; set; }
         public bool Avaible { get; set; }
-        public bool isEmployer { get; set; }
+        public string Role { get; set; }
         
     }
 }

@@ -11,6 +11,6 @@ namespace BackEnd_RESTProject.Models
         public string LastName { get; set; }
         public string Skillset { get; set; }
         public bool Avaible { get; set; }
-        public bool isEmployer { get; set; }
+        public string Role { get; set; }
     }
 }

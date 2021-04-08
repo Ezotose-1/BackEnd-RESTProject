@@ -86,8 +86,8 @@ namespace BackEnd_RESTProject
                 swagger.SwaggerDoc("v1", new OpenApiInfo  
                 {   
                     Version= "v1",   
-                    Title = "Dorset College API",  
-                    Description="ASP.NET Core 3.1 Web API Documentaion" 
+                    Title = "Job Seacker System",  
+                    Description="ASP.NET Core 3.1 or higher" 
                 });
                 // To Enable authorization using Swagger (JWT)  
                 swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()  
