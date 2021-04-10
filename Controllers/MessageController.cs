@@ -14,6 +14,7 @@ using BackEnd_RESTProject.Services;
 using BackEnd_RESTProject.Helpers;
 using BackEnd_RESTProject.Data;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BackEnd_RESTProject.Controllers
 {
@@ -23,33 +24,36 @@ namespace BackEnd_RESTProject.Controllers
         private IMapper _mapper;
         public IConfiguration Configuration;
         private readonly Context _context;
+        private readonly IEmailService _emailService;
 
         public MessageController(
             Context context,
             IUserService userService,
             IMapper mapper,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IEmailService emailService)
         {
             _userService = userService;
             _mapper = mapper;
             _context = context;
             Configuration = configuration;
+            _emailService = emailService;
         }
 
         [AllowAnonymous]
-        [HttpGet("Send/{password}/{from}/{to}/{message}")]
-        public IActionResult SendMessage(string password, string from, string to, string message)
+        [HttpGet("mail")]
+        public async Task<IActionResult> SendMessage(MessageDTO model)
         {
-            var userFrom = _context.User.Where(x => x.Username == from && x.Password == password).Single();
-            var userTo = _context.User.Where(x => x.Username == to).Single();
-            var message_model = new MessageDTO
-            {
-                FromUsername = userFrom.Username,
-                ToUsername = userTo.Username,
-                Message = message
-            };
+            var response = await _emailService.SendEmailAsync(model.FromEmail, model.ToEmails, model.Subject, model.Message);
 
-            return Ok(message_model);
+            if (response.StatusCode == System.Net.HttpStatusCode.Accepted)
+            {
+                return Ok("Email sent " + response.StatusCode);
+            }
+            else
+            {
+                return BadRequest("Email sending failed " + response.StatusCode);
+            }
         }
     }
 
