@@ -7,8 +7,9 @@ namespace BackEnd_RESTProject.DTO
 {
     public class MessageDTO
     {
-        public string FromUsername { get; set; }
-        public string ToUsername { get; set; }
+        public string FromEmail { get; set; }
+        public List<string> ToEmails { get; set; }
+        public string Subject { get; set; }
         public string Message { get; set; }
     }
 }
