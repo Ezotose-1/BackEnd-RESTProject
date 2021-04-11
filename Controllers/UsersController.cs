@@ -147,7 +147,6 @@ namespace Controllers
             user.Advertise = Advertise;
             _context.User.Update(user);
             _context.SaveChanges();
-            Console.WriteLine(User.FindFirstValue(ClaimTypes.NameIdentifier));
             return Ok();
         }
 

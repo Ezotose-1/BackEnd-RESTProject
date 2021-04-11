@@ -64,11 +64,28 @@ namespace Controllers
             return Ok(job);
         }
 
+
+            // Function for candidat to see if they have job offer
+        /// <summary>
+        /// Employer : List all your job offer
+        /// </summary>
+        [Authorize(Roles= Role.Employer)]
+        [HttpGet("GetYourOffer/{YourId}")]
+        public IActionResult GetYourOffer(int YourId)
+        {
+            var jobs = _context.Job.ToList().Where(x => x.EmployerID == YourId);
+            if (jobs == null)
+                return NotFound();
+            return Ok(jobs);
+        }
+
+
+
             // Function for candidat to see if they have job offer
         /// <summary>
         /// Candidate : See if you have a new job offer
         /// </summary>
-        [HttpGet("{YourId}")]
+        [HttpGet("GetJobs/{YourId}")]
         public IActionResult GetJobs(int YourId)
         {
             if (_context.User.ToList().Find(x => x.Id == YourId) == null)
