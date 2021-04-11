@@ -144,9 +144,10 @@ namespace Controllers
         public IActionResult Avertise(int id, bool Advertise)
         {
             var user = _context.User.ToList().Find(x => x.Id == id);
-            user.Advertise = true;
+            user.Advertise = Advertise;
             _context.User.Update(user);
             _context.SaveChanges();
+            Console.WriteLine(User.FindFirstValue(ClaimTypes.NameIdentifier));
             return Ok();
         }
 
