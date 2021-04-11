@@ -42,7 +42,7 @@ namespace Controllers
 
             // Function that will allow employer to add a new job
         /// <summary>
-        /// Purpose a new job to a candidat.
+        /// Employer : Purpose a new job to a candidat.
         /// </summary>
         [Authorize(Roles= Role.Employer)]
         [HttpPost]
@@ -75,6 +75,23 @@ namespace Controllers
                 return NotFound();
             var jobs = _context.Job.ToList().Where(x => x.CandidatID == YourId);
             return Ok(jobs);
-        } 
+        }
+
+
+            // Function for candidat to accept any job offer
+        /// <summary>
+        /// Candidate : Accept an offer
+        /// </summary>
+        [HttpPut("{OfferId}/{Accept}")]
+        public IActionResult AcceptOffer(int OfferId, bool Accept)
+        {
+            var offer = _context.Job.ToList().Find(x => x.Id == OfferId);
+            if (offer == null)
+                return NotFound();
+            offer.Accepted = Accept;
+            _context.Job.Update(offer);
+            _context.SaveChanges();
+            return Ok();
+        }
     }
 }

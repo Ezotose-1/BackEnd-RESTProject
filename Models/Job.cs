@@ -8,5 +8,6 @@ namespace BackEnd_RESTProject.Models
         public int EmployerID { get; set; }
         public int Paid { get; set; }
         public bool Finished { get; set; }
+        public bool Accepted { get; set; }
     }
 }
