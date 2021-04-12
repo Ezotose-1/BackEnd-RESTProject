@@ -70,9 +70,10 @@ namespace Controllers
         /// Employer : List all your job offer
         /// </summary>
         [Authorize(Roles= Role.Employer)]
-        [HttpGet("GetYourOffer/{YourId}")]
-        public IActionResult GetYourOffer(int YourId)
+        [HttpGet("GetYourOffer")]
+        public IActionResult GetYourOffer()
         {
+            int YourId = int.Parse(User.Identity.Name);
             var jobs = _context.Job.ToList().Where(x => x.EmployerID == YourId);
             if (jobs == null)
                 return NotFound();
@@ -85,9 +86,10 @@ namespace Controllers
         /// <summary>
         /// Candidate : See if you have a new job offer
         /// </summary>
-        [HttpGet("GetJobs/{YourId}")]
-        public IActionResult GetJobs(int YourId)
+        [HttpGet("GetJobs")]
+        public IActionResult GetJobs()
         {
+            int YourId = int.Parse(User.Identity.Name);
             if (_context.User.ToList().Find(x => x.Id == YourId) == null)
                 return NotFound();
             var jobs = _context.Job.ToList().Where(x => x.CandidatID == YourId);
