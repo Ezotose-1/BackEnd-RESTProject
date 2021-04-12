@@ -140,9 +140,10 @@ namespace Controllers
             }
         }
 
-        [HttpPut("{id}/{Advertise}")]
-        public IActionResult Avertise(int id, bool Advertise)
+        [HttpPut("Advertise/{Advertise}")]
+        public IActionResult Avertise(bool Advertise)
         {
+            int id = int.Parse(User.Identity.Name);
             var user = _context.User.ToList().Find(x => x.Id == id);
             user.Advertise = Advertise;
             _context.User.Update(user);
