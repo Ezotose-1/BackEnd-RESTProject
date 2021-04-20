@@ -18,6 +18,7 @@ namespace BackEnd_RESTProject.Services
         void Update(User user, string currentPassword, string password, string confirmPassword, bool Avaible, string Skillset);
         void Delete(int id);
         string ForgotPassword(string username);
+        User ResetPassword(string username, string key, string newpassword);
     }
 
     public class UserService : IUserService
@@ -215,6 +216,26 @@ namespace BackEnd_RESTProject.Services
             }
             return UPPERCASE_CHARACTERS[randomUppercasChars] + hashstring + SPECIAL_CHARACTERS[randomSpecialCharNumber];
         }
-        
+
+        public User ResetPassword(string username, string key, string newpassword)
+        {
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(key))
+            {
+                return null;
+            }
+
+            var user = _context.User.FirstOrDefault(x => x.Username == username) ?? null;
+
+            // check if username exists
+            if (user == null)
+            {
+                return null;
+            }
+            user.Password = newpassword;
+            _context.SaveChanges();
+            return user;
+           
+        }
+
     }
 }

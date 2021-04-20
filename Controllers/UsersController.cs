@@ -173,5 +173,25 @@ namespace Controllers
             return Ok();
         }
 
+        [AllowAnonymous]
+        [HttpPost("ResetPassword")]
+        public IActionResult ResetPassword([FromBody] ResetPasswordModel model)
+        {
+            var user = _userService.ResetPassword(model.Username, model.key, model.newpassword);
+
+            if (user == null)
+                return BadRequest(new { message = "Username or key is incorrect" });
+
+           
+
+            return Ok(new
+            {
+                Id = user.Id,
+                Username = user.Username,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Password = user.Password
+            });
+        }
     }
 }
