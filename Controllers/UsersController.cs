@@ -172,5 +172,6 @@ namespace Controllers
             _userService.Delete(id);
             return Ok();
         }
+
     }
 }

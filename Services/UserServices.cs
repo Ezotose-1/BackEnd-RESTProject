@@ -187,20 +187,24 @@ namespace BackEnd_RESTProject.Services
                     var Subject = "Password Recovery";
                     var message = key;
 
-                    var response = _emailService.SendEmailAsync("juliencaisto@gmail.com", emailAddress, Subject, message);
-                    Console.WriteLine(response.Result.StatusCode);
+                    var response = _emailService.SendEmailAsync("juliencalisto@gmail.com", emailAddress, Subject, message);
+                    //Console.WriteLine(response.Result.StatusCode);
 
-                    if (response.IsCompletedSuccessfully)
-                    {
-                        return new string("your new password will be emailed to you shortly");
-                    }
+                    return new string("your new password will be emailed to you shortly");
                 }
                 return new string("your account does not exist");
+                
+               
             }
         }
         
         private static string GenerateKey(int keyLength)
         {
+            char[] SPECIAL_CHARACTERS = @"!#$%&*@\".ToCharArray();
+            char[] UPPERCASE_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+            Random rand = new Random();
+            int randomSpecialCharNumber = rand.Next(0, SPECIAL_CHARACTERS.Length - 1);
+            int randomUppercasChars = rand.Next(0, UPPERCASE_CHARACTERS.Length - 1);
             RNGCryptoServiceProvider rngCryptoServiceProvider = new RNGCryptoServiceProvider();
             byte[] randomBytes = new byte[keyLength];
             rngCryptoServiceProvider.GetBytes(randomBytes);
@@ -209,7 +213,7 @@ namespace BackEnd_RESTProject.Services
             {
                 hashstring += hashbyte.ToString("x2");
             }
-            return hashstring;
+            return UPPERCASE_CHARACTERS[randomUppercasChars] + hashstring + SPECIAL_CHARACTERS[randomSpecialCharNumber];
         }
         
     }
