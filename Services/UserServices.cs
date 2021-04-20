@@ -17,18 +17,18 @@ namespace BackEnd_RESTProject.Services
         User Create(User user, string password);
         void Update(User user, string currentPassword, string password, string confirmPassword, bool Avaible, string Skillset);
         void Delete(int id);
-        //string ForgotPassword(string username);
+        string ForgotPassword(string username);
     }
 
     public class UserService : IUserService
     {
         private Context _context;
-        //private readonly IEmailService _emailService;
+        private readonly IEmailService _emailService;
 
-        public UserService(Context context)
+        public UserService(Context context, IEmailService emailService)
         {
             _context = context;
-           //_emailService = emailService;
+            _emailService = emailService;
         }
 
         public User Authenticate(string username, string password)
@@ -167,7 +167,7 @@ namespace BackEnd_RESTProject.Services
             }
             return hashstring;
         }
-        /*
+        
         public string ForgotPassword(string username)
         {
             if (string.IsNullOrEmpty(username))
@@ -188,7 +188,7 @@ namespace BackEnd_RESTProject.Services
                     var message = key;
 
                     var response = _emailService.SendEmailAsync("juliencaisto@gmail.com", emailAddress, Subject, message);
-                    System.Console.WriteLine(response.Result.StatusCode);
+                    Console.WriteLine(response.Result.StatusCode);
 
                     if (response.IsCompletedSuccessfully)
                     {
@@ -198,7 +198,7 @@ namespace BackEnd_RESTProject.Services
                 return new string("your account does not exist");
             }
         }
-        /*
+        
         private static string GenerateKey(int keyLength)
         {
             RNGCryptoServiceProvider rngCryptoServiceProvider = new RNGCryptoServiceProvider();
@@ -211,6 +211,6 @@ namespace BackEnd_RESTProject.Services
             }
             return hashstring;
         }
-        */
+        
     }
 }
