@@ -112,5 +112,24 @@ namespace Controllers
             _context.SaveChanges();
             return Ok();
         }
+
+            // Function for candidat to set job to finish
+        /// <summary>
+        /// Candidate : Finish a job
+        /// </summary>
+        [HttpPut("Finish/{OfferId}/{IsFinish}")]
+        public IActionResult FinishOffer(int OfferId, bool IsFinish)
+        {
+            int YourId = int.Parse(User.Identity.Name);
+            var offer = _context.Job.ToList().Find(x => x.Id == OfferId);
+            if (offer == null)
+                return NotFound();
+            if (offer.CandidatID != YourId)
+                return NotFound();
+            offer.Finished = IsFinish;
+            _context.Job.Update(offer);
+            _context.SaveChanges();
+            return Ok();
+        }
     }
 }
