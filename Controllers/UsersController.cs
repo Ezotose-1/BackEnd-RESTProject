@@ -94,6 +94,20 @@ namespace Controllers
             }
         }
 
+            // Function too see your own profile
+        /// <summary>
+        /// See your profile
+        /// </summary>
+        [HttpGet("GetProfile")]
+        public IActionResult GetProfile()
+        {
+            int id = int.Parse(User.Identity.Name);
+            var user = _userService.GetById(id);
+            var model = _mapper.Map<UserModel>(user);
+            return Ok(model);
+        }
+
+
         [Authorize(Roles= Role.Employer)]
         [HttpGet]
         public IActionResult GetAll()
