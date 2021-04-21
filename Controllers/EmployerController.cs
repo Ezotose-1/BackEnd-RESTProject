@@ -59,7 +59,30 @@ namespace Controllers
         public IActionResult GetById(int id)
         {
             var user = _userService.GetById(id);
-            var model = _mapper.Map<UserModel>(user);
+
+            var rates = _context.Rate.Where(x => x.User_ToId == user.Id).ToList();
+            var ratesDTOLst = new List<RateDTO>();
+
+            foreach (var rate in rates)
+            {
+                ratesDTOLst.Add( new RateDTO {
+                    Stars   = rate.Stars,
+                    Comment = rate.Comment
+                });
+            }
+
+            var model = new UserProfileDTO {
+                Id          = user.Id,
+                FirstName   = user.FirstName,
+                LastName    = user.LastName,
+                Username    = user.Username,
+                Skillset    = user.Skillset,
+                Avaible     = user.Avaible,
+                Role        = user.Role,
+                Rates       = ratesDTOLst,
+            };
+
+
             return Ok(model);
         }
 
