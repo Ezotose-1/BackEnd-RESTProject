@@ -8,6 +8,7 @@ namespace BackEnd_RESTProject.DTO
 {
     public class RateDTO
     {
+        public string JobDescription { get; set; }
         public int Stars { get; set; }
         public string Comment { get; set; }
     }
