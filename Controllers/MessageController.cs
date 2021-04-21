@@ -55,6 +55,7 @@ namespace BackEnd_RESTProject.Controllers
                 return BadRequest("Email sending failed " + response.StatusCode);
             }
         }
+
         /*
         [AllowAnonymous]
         [HttpPost("forgotpassword")]

@@ -8,6 +8,7 @@ namespace BackEnd_RESTProject.Data
         public Context(DbContextOptions<Context> options) : base(options) { }
         public DbSet<User> User {get; set;}
         public DbSet<Job> Job {get; set;}
+        public DbSet<Rate> Rate { get; set; }
 
     }
 }
