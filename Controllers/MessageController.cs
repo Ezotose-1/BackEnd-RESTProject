@@ -41,9 +41,15 @@ namespace BackEnd_RESTProject.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("mail")]
+        [HttpGet("sendmail")]
         public async Task<IActionResult> SendMessage(MessageDTO model)
         {
+            var emails = new List<string>();
+            foreach (var item in model.ToEmails)
+            {
+                emails.Add(item);
+            }
+
             var response = await _emailService.SendEmailAsync(model.FromEmail, model.ToEmails, model.Subject, model.Message);
 
             if (response.StatusCode == System.Net.HttpStatusCode.Accepted)
@@ -56,14 +62,12 @@ namespace BackEnd_RESTProject.Controllers
             }
         }
 
-        /*
         [AllowAnonymous]
         [HttpPost("forgotpassword")]
         public IActionResult ForgotPassword(ForgotPassword model)
         {
             return Ok(_userService.ForgotPassword(model.Username));
         }
-        */
     }
 
 }
