@@ -47,7 +47,7 @@ namespace Controllers
         /// Employer : Add job on the market.
         /// </summary>
         [Authorize(Roles= Role.Employer)]
-        [HttpPost("AddJob")]
+        [HttpPost("Employer/AddJob")]
         public IActionResult Add_Job(JobDTO jobDTO)
         {
             int YourId = int.Parse(User.Identity.Name);
@@ -55,7 +55,8 @@ namespace Controllers
                 Description = jobDTO.Description,
                 EmployerID  = YourId,
                 Paid        = jobDTO.Paid,
-                Finished    = false
+                Finished    = false,
+                PublicOffer = true
             };
             _context.Job.Add(job);
             _context.SaveChanges();
@@ -69,22 +70,20 @@ namespace Controllers
         /// Employer : Purpose a new job to a candidat.
         /// </summary>
         [Authorize(Roles= Role.Employer)]
-        [HttpPost("GiveOffer")]
-        public IActionResult Give_Job(JobOfferDTO jobDTO)
+        [HttpPost("Employer/GiveOffer/{OfferId}/{CandidatId}")]
+        public IActionResult Give_Job(int OfferId, int CandidatId)
         {
-            int YourId = int.Parse(User.Identity.Name);
-            if (_context.User.ToList().Find(x => x.Id == jobDTO.CandidatID) == null)
+            var offer = _context.Job.ToList().Find(j => j.Id == OfferId);
+            if (offer == null)
                 return NotFound();
-            var job = new Job {
-                Description = jobDTO.Description,
-                CandidatID  = jobDTO.CandidatID,
-                EmployerID  = YourId,
-                Paid        = jobDTO.Paid,
-                Finished    = false
-            };
-            _context.Job.Add(job);
+            var candidat = _context.User.ToList().Find(u => u.Id == CandidatId);
+            if (candidat == null)
+                return NotFound();
+            offer.PublicOffer = false;
+            offer.CandidatID = CandidatId;
+            _context.Job.Update(offer);
             _context.SaveChanges();
-            return Ok(job);
+            return Ok(offer);
         }
 
 
@@ -93,23 +92,59 @@ namespace Controllers
         /// Employer : List all your job offer
         /// </summary>
         [Authorize(Roles= Role.Employer)]
-        [HttpGet("GetYourOffer")]
+        [HttpGet("Employer/GetYourOffer")]
         public IActionResult GetYourOffer()
         {
             int YourId = int.Parse(User.Identity.Name);
             var jobs = _context.Job.ToList().Where(x => x.EmployerID == YourId);
-            if (jobs == null)
-                return NotFound();
-            return Ok(jobs);
+
+
+            var jobsOffer = new List<EmployerJobDTO>();
+            foreach (var j in jobs)
+            {
+                var candidats = new List<UserModel>();
+                if (j.PublicOffer == true){
+                    var c = _context.CandidatJob.ToList().Where(x => x.JobId == j.Id);
+                    foreach (var u in c)
+                    {
+                        var user = _context.User.ToList().Find(us => us.Id == u.Id);
+                        var model = _mapper.Map<UserModel>(user);
+                        candidats.Add(model);
+                    }
+                }
+                jobsOffer.Add(new EmployerJobDTO{
+                    Id = j.Id,
+                    Description = j.Description,
+                    CandidatID = j.CandidatID,
+                    Paid = j.Paid,
+                    Finished = j.Finished,
+                    Accepted = j.Accepted,
+                    PublicOffer = j.PublicOffer,
+                    Candidats = candidats 
+                });
+            }
+            return Ok(jobsOffer);
         }
 
+
+
+            // Function for candidat to see all job offer on the market
+        /// <summary>
+        /// Candidate : See all job available on the market
+        /// </summary>
+        [HttpGet("Candidat/GetMarketJobs")]
+        public IActionResult GetMarketJobs()
+        {
+            var jobs = _context.Job.ToList().Where(x => x.PublicOffer == true);
+            return Ok(jobs);
+        }
 
 
             // Function for candidat to see if they have job offer
         /// <summary>
         /// Candidate : See if you have a new job offer
         /// </summary>
-        [HttpGet("GetJobs")]
+        [HttpGet("Candidat/GetJobs")]
         public IActionResult GetJobs()
         {
             int YourId = int.Parse(User.Identity.Name);
@@ -120,11 +155,32 @@ namespace Controllers
         }
 
 
+
+            // Function to candidate for a job
+        /// <summary>
+        /// Candidate : Candidate for a public job
+        /// </summary>
+        [HttpPut("Candidat/{OfferId}")]
+        public IActionResult AcceptOffer(int OfferId)
+        {
+            var offer = _context.Job.ToList().Find(x => x.Id == OfferId);
+            if (offer == null || !offer.PublicOffer)
+                return NotFound();
+            _context.CandidatJob.Add(new CandidatJob {
+                CandidatId      = int.Parse(User.Identity.Name),
+                JobId           = OfferId
+            });
+            _context.SaveChanges();
+            return Ok();
+        }
+
+
+
             // Function for candidat to accept any job offer
         /// <summary>
         /// Candidate : Accept an offer
         /// </summary>
-        [HttpPut("{OfferId}/{Accept}")]
+        [HttpPut("Candidat/{OfferId}/{Accept}")]
         public IActionResult AcceptOffer(int OfferId, bool Accept)
         {
             var offer = _context.Job.ToList().Find(x => x.Id == OfferId);
@@ -140,7 +196,7 @@ namespace Controllers
         /// <summary>
         /// Candidate : Finish a job
         /// </summary>
-        [HttpPut("Finish/{OfferId}/{IsFinish}")]
+        [HttpPut("Candidat/Finish/{OfferId}/{IsFinish}")]
         public IActionResult FinishOffer(int OfferId, bool IsFinish)
         {
             int YourId = int.Parse(User.Identity.Name);

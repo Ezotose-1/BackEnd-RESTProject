@@ -9,6 +9,7 @@ namespace BackEnd_RESTProject.Data
         public DbSet<User> User {get; set;}
         public DbSet<Job> Job {get; set;}
         public DbSet<Rate> Rate { get; set; }
+        public DbSet<CandidatJob> CandidatJob { get; set; }
 
     }
 }
