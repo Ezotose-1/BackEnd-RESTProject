@@ -59,7 +59,7 @@ namespace BackEnd_RESTProject.Controllers
         public IActionResult GetById(int id)
         {
             var user = _userService.GetById(id);
-            if (user == null || user.Role != "employer")
+            if (user == null || user.Role != "Employer")
                 return Ok("Bad request");
 
             var rates = _context.Rate.Where(x => x.User_ToId == user.Id).ToList();
