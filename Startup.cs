@@ -81,7 +81,9 @@ namespace BackEnd_RESTProject
 
             // configure DI for application services
             services.AddScoped<IUserService, UserService>();
-            
+
+            services.AddScoped<IEmailService, EmailService>();
+
             services.AddSwaggerGen(swagger =>  
             {  
                 //This is to generate the Default UI of Swagger Documentation  
