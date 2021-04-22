@@ -42,7 +42,7 @@ namespace BackEnd_RESTProject.Controllers
         /// <summary>
         /// List all employers.
         /// </summary>
-        [Authorize(Roles = Role.Employer)]
+        [Authorize(Roles = Role.Candidat)]
         [HttpGet("SeeAllEmployers")]
         public IActionResult GetAll()
         {
@@ -54,7 +54,7 @@ namespace BackEnd_RESTProject.Controllers
         /// <summary>
         /// See candidate profile.
         /// </summary>
-        [Authorize(Roles = Role.Employer)]
+        [Authorize(Roles = Role.Candidat)]
         [HttpGet("SeeAEmployer/{id}")]
         public IActionResult GetById(int id)
         {

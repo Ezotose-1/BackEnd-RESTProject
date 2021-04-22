@@ -12,6 +12,5 @@ namespace BackEnd_RESTProject.DTO
         public bool Avaible { get; set; }
         public string Role { get; set; }
         public List<RateDTO> Rates { get; set; }
-        
     }
 }
