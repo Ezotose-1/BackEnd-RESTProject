@@ -180,6 +180,11 @@ namespace Controllers
             }
         }
 
+
+            // Function for candidat to advertise himself to get first on a list
+        /// <summary>
+        /// Candidat : Advertise yourself to get first on the candidat's list
+        /// </summary>
         [HttpPut("Advertise/{Advertise}")]
         public IActionResult Avertise(bool Advertise)
         {

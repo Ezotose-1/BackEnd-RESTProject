@@ -40,22 +40,45 @@ namespace Controllers
         }
 
 
-            // Function that will allow employer to add a new job
+
+
+            // Function that will allow employer to add a new job on the market
+        /// <summary>
+        /// Employer : Add job on the market.
+        /// </summary>
+        [Authorize(Roles= Role.Employer)]
+        [HttpPost("AddJob")]
+        public IActionResult Add_Job(JobDTO jobDTO)
+        {
+            int YourId = int.Parse(User.Identity.Name);
+            var job = new Job {
+                Description = jobDTO.Description,
+                EmployerID  = YourId,
+                Paid        = jobDTO.Paid,
+                Finished    = false
+            };
+            _context.Job.Add(job);
+            _context.SaveChanges();
+            return Ok(job);
+        }
+
+
+
+            // Function that will allow employer to purpose job to candidate
         /// <summary>
         /// Employer : Purpose a new job to a candidat.
         /// </summary>
         [Authorize(Roles= Role.Employer)]
-        [HttpPost]
-        public IActionResult Add_Job(JobDTO jobDTO)
+        [HttpPost("GiveOffer")]
+        public IActionResult Give_Job(JobOfferDTO jobDTO)
         {
+            int YourId = int.Parse(User.Identity.Name);
             if (_context.User.ToList().Find(x => x.Id == jobDTO.CandidatID) == null)
-                return NotFound();
-            if (_context.User.ToList().Find(x => x.Id == jobDTO.EmployerID) == null)
                 return NotFound();
             var job = new Job {
                 Description = jobDTO.Description,
                 CandidatID  = jobDTO.CandidatID,
-                EmployerID  = jobDTO.EmployerID,
+                EmployerID  = YourId,
                 Paid        = jobDTO.Paid,
                 Finished    = false
             };
@@ -132,6 +155,11 @@ namespace Controllers
             return Ok();
         }
 
+
+            // Function for user to rate other user on a job (candidat and employer)
+        /// <summary>
+        /// User : Rate your Employer/Candidat on a job
+        /// </summary>
         [HttpPut("Rating/{JobId}/{comment}/{gradeOn10}")]
         public IActionResult RatingAJob(int JobId, string comment, int gradeOn10)
         {
