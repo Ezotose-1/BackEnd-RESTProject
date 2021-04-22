@@ -103,7 +103,33 @@ namespace Controllers
         {
             int id = int.Parse(User.Identity.Name);
             var user = _userService.GetById(id);
-            var model = _mapper.Map<UserModel>(user);
+            var rates = _context.Rate.Where(x => x.User_ToId == user.Id).ToList();
+            var jobs = _context.Job.Where(x => ((User.IsInRole("Employer") || User.IsInRole("Admin")) ? x.EmployerID == id : x.CandidatID == id)).ToList();
+            var ratesDTOLst = new List<RateDTO>();
+
+            foreach (var rate in rates)
+            {
+                ratesDTOLst.Add( new RateDTO {
+                    JobDescription = "",
+                    Stars   = rate.Stars,
+                    Comment = rate.Comment
+                });
+            }
+            for(int i = 0; i < ratesDTOLst.Count; i++)
+            {
+                ratesDTOLst[i].JobDescription = jobs[i].Description;
+            }
+
+            var model = new UserProfileDTO {
+                Id          = user.Id,
+                FirstName   = user.FirstName,
+                LastName    = user.LastName,
+                Username    = user.Username,
+                Skillset    = user.Skillset,
+                Avaible     = user.Avaible,
+                Role        = user.Role,
+                Rates       = ratesDTOLst,
+            };
             return Ok(model);
         }
 
@@ -154,6 +180,11 @@ namespace Controllers
             }
         }
 
+
+            // Function for candidat to advertise himself to get first on a list
+        /// <summary>
+        /// Candidat : Advertise yourself to get first on the candidat's list
+        /// </summary>
         [HttpPut("Advertise/{Advertise}")]
         public IActionResult Avertise(bool Advertise)
         {
@@ -171,6 +202,27 @@ namespace Controllers
         {
             _userService.Delete(id);
             return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpPost("ResetPassword")]
+        public IActionResult ResetPassword([FromBody] ResetPasswordModel model)
+        {
+            var user = _userService.ResetPassword(model.Username, model.key, model.newpassword);
+
+            if (user == null)
+                return BadRequest(new { message = "Username or key is incorrect" });
+
+           
+
+            return Ok(new
+            {
+                Id = user.Id,
+                Username = user.Username,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Password = user.Password
+            });
         }
     }
 }

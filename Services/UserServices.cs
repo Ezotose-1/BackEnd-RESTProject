@@ -17,15 +17,19 @@ namespace BackEnd_RESTProject.Services
         User Create(User user, string password);
         void Update(User user, string currentPassword, string password, string confirmPassword, bool Avaible, string Skillset);
         void Delete(int id);
+        string ForgotPassword(string username);
+        User ResetPassword(string username, string key, string newpassword);
     }
 
     public class UserService : IUserService
     {
         private Context _context;
+        private readonly IEmailService _emailService;
 
-        public UserService(Context context)
+        public UserService(Context context, IEmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         public User Authenticate(string username, string password)
@@ -164,5 +168,74 @@ namespace BackEnd_RESTProject.Services
             }
             return hashstring;
         }
+        
+        public string ForgotPassword(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new AppException("Username does not exist");
+            }
+            else
+            {
+                var user = _context.User.SingleOrDefault(x => x.Username == username);
+                if (user != null)
+                {
+                    string key = GenerateKey(25);
+                    user.key = key;
+                    _context.SaveChanges();
+
+                    var emailAddress = new List<string>() { username };
+                    var Subject = "Password Recovery";
+                    var message = key;
+
+                    var response = _emailService.SendEmailAsync("juliencalisto@gmail.com", emailAddress, Subject, message);
+                    //Console.WriteLine(response.Result.StatusCode);
+
+                    return new string("your new password will be emailed to you shortly");
+                }
+                return new string("your account does not exist");
+                
+               
+            }
+        }
+        
+        private static string GenerateKey(int keyLength)
+        {
+            char[] SPECIAL_CHARACTERS = @"!#$%&*@\".ToCharArray();
+            char[] UPPERCASE_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+            Random rand = new Random();
+            int randomSpecialCharNumber = rand.Next(0, SPECIAL_CHARACTERS.Length - 1);
+            int randomUppercasChars = rand.Next(0, UPPERCASE_CHARACTERS.Length - 1);
+            RNGCryptoServiceProvider rngCryptoServiceProvider = new RNGCryptoServiceProvider();
+            byte[] randomBytes = new byte[keyLength];
+            rngCryptoServiceProvider.GetBytes(randomBytes);
+            string hashstring = "";
+            foreach (var hashbyte in randomBytes)
+            {
+                hashstring += hashbyte.ToString("x2");
+            }
+            return UPPERCASE_CHARACTERS[randomUppercasChars] + hashstring + SPECIAL_CHARACTERS[randomSpecialCharNumber];
+        }
+
+        public User ResetPassword(string username, string key, string newpassword)
+        {
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(key))
+            {
+                return null;
+            }
+
+            var user = _context.User.FirstOrDefault(x => x.Username == username) ?? null;
+
+            // check if username exists
+            if (user == null)
+            {
+                return null;
+            }
+            user.Password = newpassword;
+            _context.SaveChanges();
+            return user;
+           
+        }
+
     }
 }

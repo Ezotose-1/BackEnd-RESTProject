@@ -13,5 +13,7 @@ namespace BackEnd_RESTProject.Models
         public bool Avaible { get; set; }
         public string Role { get; set; }
         public bool Advertise { get; set; }
+        public string key { get; set; }
+
     }
 }
