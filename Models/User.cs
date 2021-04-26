@@ -14,6 +14,7 @@ namespace BackEnd_RESTProject.Models
         public string Role { get; set; }
         public bool Advertise { get; set; }
         public string key { get; set; }
+        public bool IsBanned { get; set;}
 
     }
 }

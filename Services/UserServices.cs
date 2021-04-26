@@ -19,6 +19,7 @@ namespace BackEnd_RESTProject.Services
         void Delete(int id);
         string ForgotPassword(string username);
         User ResetPassword(string username, string key, string newpassword);
+        bool isUserIdValid(int id);
     }
 
     public class UserService : IUserService
@@ -237,5 +238,16 @@ namespace BackEnd_RESTProject.Services
            
         }
 
+        //-----
+        //Returns true if the user id is valid
+        //-----
+        public bool isUserIdValid(int userId)
+        {
+            if (GetById(userId) == null)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }
