@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 
 namespace BackEnd_RESTProject.Controllers
 {
+   
     public class MessageController : Controller
     {
         private IUserService _userService;
@@ -68,6 +69,34 @@ namespace BackEnd_RESTProject.Controllers
         {
             return Ok(_userService.ForgotPassword(model.Username));
         }
-    }
 
+        [Authorize]
+        [HttpPost("MailBoxes")]
+        public IActionResult MailBoxes()
+        {
+            int id = int.Parse(User.Identity.Name);
+            var user = _userService.GetById(id);
+            var MessageBoxe = _context.Messageboxe.ToList().Where(x => x.User_ToName == user.Username).OrderByDescending(x => x.When);
+            var model = _mapper.Map<IList<MessageBoxe>>(MessageBoxe);
+            return Ok(model);
+        }
+
+        [Authorize]
+        [HttpGet("sendMessage")]
+        public IActionResult SendMessageBoxe(SendMessageDTO model)
+        {
+            int id = int.Parse(User.Identity.Name);
+            var user = _userService.GetById(id);
+            var modelMessage = new MessageBoxe
+            {
+               User_ToName = model.User_ToName,
+               from_who = user.Username,
+               subject = model.subject,
+               When = DateTime.Now
+            };
+            _context.Messageboxe.Add(modelMessage);
+            _context.SaveChanges();
+            return Ok();
+        }
+    }
 }

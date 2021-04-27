@@ -232,6 +232,8 @@ namespace BackEnd_RESTProject.Services
                 return null;
             }
             user.Password = newpassword;
+            user.key = null;
+            user.PasswordHash = computeHash(newpassword);
             _context.SaveChanges();
             return user;
            

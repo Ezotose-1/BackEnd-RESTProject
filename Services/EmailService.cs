@@ -3,6 +3,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using BackEnd_RESTProject.Data;
+using BackEnd_RESTProject.Models;
+using BackEnd_RESTProject.Helpers;
+using System;
 
 namespace BackEnd_RESTProject.Services
 {
@@ -13,9 +17,11 @@ namespace BackEnd_RESTProject.Services
     public class EmailService : IEmailService
     {
         public IConfiguration Configuration { get; }
+        private Context _context;
 
-        public EmailService(IConfiguration configuration)
+        public EmailService(IConfiguration configuration,Context context)
         {
+            _context = context;
             Configuration = configuration;
         }
         public async Task<Response> SendEmailAsync(string FromEmail, List<string> ToEmails, string subject, string message)
@@ -28,12 +34,13 @@ namespace BackEnd_RESTProject.Services
             var client = new SendGridClient(apiKey);
             var msg = new SendGridMessage()
             {
-                From = new EmailAddress(FromEmail, "RESTProject"),
+                From = new EmailAddress("juliencalisto@gmail.com", FromEmail),
                 Subject = subject,
                 PlainTextContent = message,
                 HtmlContent = message
             };
-
+            
+            
             foreach (var email in emails)
             {
                 msg.AddTo(new EmailAddress(email));
@@ -42,5 +49,6 @@ namespace BackEnd_RESTProject.Services
             Response response = await client.SendEmailAsync(msg);
             return response;
         }
+
     }
 }
